@@ -101,6 +101,18 @@
             font-size: 14px;
         }
 
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-container label {
+            margin-right: 20px;
+            font-weight: normal;
+            color: #444;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -182,6 +194,21 @@
             <button onclick="searchProducts()">Ara</button>
         </div>
 
+        <div class="filter-container">
+            <label>
+                <input type="radio" name="filter" value="noImage" onchange="searchProducts()">
+                Görseli olmayan ürünler
+            </label>
+            <label>
+                <input type="radio" name="filter" value="noMigros" onchange="searchProducts()">
+                Migros Linki olmayan ürünler
+            </label>
+            <label>
+                <input type="radio" name="filter" value="all" onchange="searchProducts()" checked>
+                Tümü
+            </label>
+        </div>
+
         <h2>Eklenen Ürünler</h2>
 
         <table id="productList">
@@ -249,12 +276,25 @@
             tableBody.innerHTML = "";
 
             const searchInput = document.getElementById("searchInput").value.toLowerCase();
+            const filterValue = document.querySelector('input[name="filter"]:checked').value;
 
             productList.forEach(product => {
                 const productName = product.productName.toLowerCase();
                 const productCode = product.productCode.toLowerCase();
 
-                if (productName.includes(searchInput) || productCode.includes(searchInput)) {
+                let shouldShow = true;
+
+                if (filterValue === 'noImage' && !product.productImage) {
+                    shouldShow = true;
+                } else if (filterValue === 'noMigros' && !product.migrosLink) {
+                    shouldShow = true;
+                } else if (filterValue === 'all' || (productName.includes(searchInput) || productCode.includes(searchInput))) {
+                    shouldShow = true;
+                } else {
+                    shouldShow = false;
+                }
+
+                if (shouldShow) {
                     const row = document.createElement("tr");
                     row.innerHTML = `
                         <td>${product.productName}</td>
@@ -268,27 +308,6 @@
                     `;
                     tableBody.appendChild(row);
                 }
-            });
-
-            const nonMatchingRows = productList.filter(product => {
-                const productName = product.productName.toLowerCase();
-                const productCode = product.productCode.toLowerCase();
-                return !productName.includes(searchInput) && !productCode.includes(searchInput);
-            });
-
-            nonMatchingRows.forEach(product => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${product.productName}</td>
-                    <td>${product.productCode}</td>
-                    <td><img src="${product.productImage || '#'}" alt="Ürün Resmi" width="50"></td>
-                    <td><a href="${product.migrosLink || '#'}" target="_blank">Migros Linki</a></td>
-                    <td>
-                        <button onclick="editProduct('${product.productCode}')">Düzenle</button>
-                        <button onclick="deleteProduct('${product.productCode}')">Sil</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
             });
         }
 
@@ -418,6 +437,11 @@
             link.href = URL.createObjectURL(blob);
             link.download = "urun_listesi.txt";
             link.click();
+        }
+
+        // Ürün listesinde arama
+        function searchProducts() {
+            updateProductTable();
         }
 
         window.onload = initDB;

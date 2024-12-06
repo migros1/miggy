@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -257,7 +258,10 @@
                         <td>${product.productCode}</td>
                         <td><img src="${product.productImage}" alt="Ürün Resmi" width="50"></td>
                         <td><a href="${product.migrosLink}" target="_blank">Migros Linki</a></td>
-                        <td><button onclick="editProduct('${product.productCode}')">Düzenle</button></td>
+                        <td>
+                            <button onclick="editProduct('${product.productCode}')">Düzenle</button>
+                            <button onclick="deleteProduct('${product.productCode}')">Sil</button>
+                        </td>
                     `;
                     tableBody.appendChild(row);
                 }
@@ -276,7 +280,10 @@
                     <td>${product.productCode}</td>
                     <td><img src="${product.productImage}" alt="Ürün Resmi" width="50"></td>
                     <td><a href="${product.migrosLink}" target="_blank">Migros Linki</a></td>
-                    <td><button onclick="editProduct('${product.productCode}')">Düzenle</button></td>
+                    <td>
+                        <button onclick="editProduct('${product.productCode}')">Düzenle</button>
+                        <button onclick="deleteProduct('${product.productCode}')">Sil</button>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -338,6 +345,16 @@
                 saveButton.textContent = "Ürün Ekle";
                 saveButton.onclick = addProduct;
             };
+        }
+
+        // Ürün silme fonksiyonu
+        function deleteProduct(productCode) {
+            const transaction = db.transaction(["products"], "readwrite");
+            const store = transaction.objectStore("products");
+            store.delete(productCode);
+
+            productList = productList.filter(product => product.productCode !== productCode);
+            updateProductTable();
         }
 
         // Ürün listesinde arama

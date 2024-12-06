@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miggy Asistan</title>
-    <link rel="stylesheet" href="styles/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miggy Asistan</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="chat-container">
-        <div id="chat-box" class="chat-box"></div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Mesajınızı yazın...">
-            <button id="send-btn">Gönder</button>
-        </div>
+  <div id="app">
+    <h1>Miggy Asistan</h1>
+    <form id="query-form">
+      <input type="text" id="query" placeholder="Bir ürün adı yazın..." />
+      <button type="submit">Gönder</button>
+    </form>
+    <div id="result">
+      <!-- Sonuçlar burada görüntülenecek -->
     </div>
-    <script src="scripts/script.js"></script>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>

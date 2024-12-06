@@ -141,6 +141,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s ease;
+            margin-right: 10px;
         }
 
         .download-btn:hover {
@@ -200,6 +201,8 @@
 
         <div class="btn-container">
             <button class="download-btn" onclick="downloadFile()">Güncellenmiş Listeyi İndir</button>
+            <button class="download-btn" onclick="importProducts()">Liste Aktar</button>
+            <input type="file" id="fileInput" accept=".txt" style="display: none;">
         </div>
     </div>
 
@@ -256,8 +259,8 @@
                     row.innerHTML = `
                         <td>${product.productName}</td>
                         <td>${product.productCode}</td>
-                        <td><img src="${product.productImage}" alt="Ürün Resmi" width="50"></td>
-                        <td><a href="${product.migrosLink}" target="_blank">Migros Linki</a></td>
+                        <td><img src="${product.productImage || '#'}" alt="Ürün Resmi" width="50"></td>
+                        <td><a href="${product.migrosLink || '#'}" target="_blank">Migros Linki</a></td>
                         <td>
                             <button onclick="editProduct('${product.productCode}')">Düzenle</button>
                             <button onclick="deleteProduct('${product.productCode}')">Sil</button>
@@ -278,8 +281,8 @@
                 row.innerHTML = `
                     <td>${product.productName}</td>
                     <td>${product.productCode}</td>
-                    <td><img src="${product.productImage}" alt="Ürün Resmi" width="50"></td>
-                    <td><a href="${product.migrosLink}" target="_blank">Migros Linki</a></td>
+                    <td><img src="${product.productImage || '#'}" alt="Ürün Resmi" width="50"></td>
+                    <td><a href="${product.migrosLink || '#'}" target="_blank">Migros Linki</a></td>
                     <td>
                         <button onclick="editProduct('${product.productCode}')">Düzenle</button>
                         <button onclick="deleteProduct('${product.productCode}')">Sil</button>
@@ -357,16 +360,57 @@
             updateProductTable();
         }
 
-        // Ürün listesinde arama
-        function searchProducts() {
-            updateProductTable();
+        // Ürün listesine .txt dosyasından ürün aktarma
+        function importProducts() {
+            const fileInput = document.getElementById("fileInput");
+            fileInput.click();
+
+            fileInput.addEventListener("change", (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const fileContent = e.target.result;
+                        const products = parseProductsFromFile(fileContent);
+                        saveProductsToDatabase(products);
+                        updateProductTable();
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        }
+
+        function parseProductsFromFile(fileContent) {
+            const products = [];
+            const lines = fileContent.split("\n");
+
+            for (let i = 1; i < lines.length; i++) {
+                const [productName, productCode, productImage = '', migrosLink = ''] = lines[i].split(" - ");
+                if (productName && productCode) {
+                    products.push({ productName, productCode, productImage, migrosLink });
+                }
+            }
+
+            return products;
+        }
+
+        function saveProductsToDatabase(products) {
+            products.forEach(product => {
+                const transaction = db.transaction(["products"], "readwrite");
+                const store = transaction.objectStore("products");
+                store.put(product);
+
+                if (!productList.some(p => p.productCode === product.productCode)) {
+                    productList.push(product);
+                }
+            });
         }
 
         // Ürün listesini .txt olarak indir
         function downloadFile() {
             let fileContent = "Ürün Adı - Ürün Kodu - Ürün Görseli Linki - Migros Linki\n";
             productList.forEach(product => {
-                fileContent += `${product.productName} - ${product.productCode} - ${product.productImage} - ${product.migrosLink}\n`;
+                fileContent += `${product.productName} - ${product.productCode} - ${product.productImage || ''} - ${product.migrosLink || ''}\n`;
             });
 
             const blob = new Blob([fileContent], { type: "text/plain" });

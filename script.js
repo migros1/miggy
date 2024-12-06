@@ -1,12 +1,26 @@
-// uplist.txt verisini simüle ediyoruz (veri örneği):
-const products = [
-    { name: "Domates KG.", code: "114", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTp2EbIXi4ND5Yxe744Tq_e9DTLjser26EhPyLoBnJhWFyokYTVUgrz1UM&s=10" },
-    { name: "Armut Santa Maria", code: "4", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwqCDf-RRhswOE2X8jnGOSG0VpPdDvLUrpw8iIDqj-0xi6CQHgrO3-CDc&s=10" }
-];
-
 const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
+let products = [];
+
+// uplist.txt'den verileri yükleme
+fetch('uplist.txt')
+    .then(response => response.text())
+    .then(data => {
+        // Satır satır ayrıştırıyoruz
+        const lines = data.split('\n');
+        products = lines.map(line => {
+            const parts = line.split(' - ');
+            if (parts.length === 3) {
+                return {
+                    name: parts[0].trim(),
+                    code: parts[1].trim(),
+                    image: parts[2].trim()
+                };
+            }
+        }).filter(Boolean); // Geçerli ürünleri filtrele
+    })
+    .catch(error => console.error('Veri yükleme hatası:', error));
 
 // Mesaj gönderme işlevi
 sendBtn.addEventListener('click', () => {

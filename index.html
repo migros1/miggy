@@ -3,107 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miggy - Migros Personel Asistanı</title>
+    <title>Miggy Asistan</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4 max-w-lg">
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <div class="bg-red-600 text-white p-4 flex items-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Migros_Logo.svg/1200px-Migros_Logo.svg.png" alt="Migros Logo" class="w-12 h-12 mr-4">
-                <h1 class="text-xl font-bold">Miggy Asistan</h1>
-            </div>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md bg-white shadow-md rounded-lg">
+        <div class="bg-red-600 text-white p-4 rounded-t-lg flex items-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Migros_Logo.svg/1200px-Migros_Logo.svg.png" 
+                 alt="Migros Logo" class="w-10 h-10 mr-3">
+            <h1 class="text-xl font-bold">Miggy Asistan</h1>
+        </div>
+        
+        <div id="chat-container" class="p-4 h-[500px] flex flex-col">
+            <div id="chat-messages" class="flex-grow overflow-y-auto mb-4 bg-gray-50 p-3 rounded"></div>
             
-            <div id="product-section" class="p-4">
-                <h2 class="text-lg font-semibold mb-2">Ürün Bilgileri</h2>
-                <div class="mb-4">
-                    <input type="file" id="uplist-file" accept=".txt" class="w-full p-2 border rounded">
-                </div>
-                <div id="product-display" class="grid grid-cols-3 gap-4"></div>
-            </div>
-            
-            <div id="chat-section" class="p-4 border-t">
-                <div id="chat-messages" class="h-64 overflow-y-auto mb-4 bg-gray-50 p-2 rounded"></div>
-                <div class="flex">
-                    <input type="text" id="chat-input" placeholder="Bir şeyler söyleyin..." 
-                           class="flex-grow p-2 border rounded-l">
-                    <button id="send-btn" class="bg-red-600 text-white px-4 py-2 rounded-r">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
+            <div class="flex">
+                <input type="text" id="chat-input" 
+                       placeholder="Migros personeli için yardım..." 
+                       class="flex-grow p-2 border rounded-l">
+                <button id="send-btn" class="bg-red-600 text-white px-4 py-2 rounded-r">
+                    Gönder
+                </button>
             </div>
         </div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const fileInput = document.getElementById('uplist-file');
-        const productDisplay = document.getElementById('product-display');
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
         const chatMessages = document.getElementById('chat-messages');
 
         let productList = [];
 
-        // Product List Handling
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = (event) => {
-                const content = event.target.result;
+        // Fetch uplist.txt dynamically
+        fetch('uplist.txt')
+            .then(response => response.text())
+            .then(content => {
                 productList = content.split('\n')
                     .filter(line => line.trim())
                     .map(productLine => {
                         const [name, code, imageUrl] = productLine.split(' - ');
                         return { name, code, imageUrl };
                     });
-                
-                productDisplay.innerHTML = '';
-                productList.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.className = 'border p-2 rounded text-center';
-                    productCard.innerHTML = `
-                        <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-32 object-cover mb-2">
-                        <p class="font-bold">${product.name}</p>
-                        <p class="text-sm text-gray-600">Kod: ${product.code}</p>
-                    `;
-                    
-                    productDisplay.appendChild(productCard);
-                });
-            };
-            
-            reader.readAsText(file);
-        });
-
-        // Chat Functionality
-        const API_URL = 'https://darkness.ashlynn.workers.dev/chat/';
+            })
+            .catch(error => {
+                console.error('Ürün listesi yüklenemedi:', error);
+                appendMessage('system', 'Ürün listesi yüklenemedi.');
+            });
 
         function findProductDetails(query) {
-            const matchedProducts = productList.filter(product => 
+            return productList.filter(product => 
                 product.name.toLowerCase().includes(query.toLowerCase())
             );
-            return matchedProducts;
         }
 
         async function sendMessage() {
             const userMessage = chatInput.value.trim();
             if (!userMessage) return;
 
-            // Display user message
             appendMessage('user', userMessage);
             chatInput.value = '';
 
             // Check for product-related queries
             const productQuery = userMessage.match(/(?:kodunu ver|detayını göster|bilgisini al)\s*(?:için)?\s*(.+)/i);
+            
             if (productQuery) {
                 const searchTerm = productQuery[1].trim();
                 const products = findProductDetails(searchTerm);
                 
                 if (products.length > 0) {
                     products.forEach(product => {
-                        appendMessage('system', `Ürün: ${product.name}\nKodu: ${product.code}\nGörsel:`);
+                        appendMessage('system', `Ürün: ${product.name}\nKodu: ${product.code}`);
                         appendMessage('image', product.imageUrl);
                     });
                     return;
@@ -111,10 +82,9 @@
             }
 
             try {
-                const response = await fetch(`${API_URL}?prompt=${encodeURIComponent(userMessage)}&model=gpt-4o-mini`);
+                const response = await fetch(`https://darkness.ashlynn.workers.dev/chat/?prompt=${encodeURIComponent(userMessage)}&model=gpt-4o-mini`);
                 const data = await response.json();
                 
-                // Display AI response
                 appendMessage('ai', data.response);
             } catch (error) {
                 appendMessage('error', 'Bir hata oluştu. Lütfen tekrar deneyin.');
@@ -122,26 +92,36 @@
             }
         }
 
-        function appendMessage(sender, message) {
-            const messageElement = document.createElement('div');
-            
-            if (sender === 'image') {
-                messageElement.innerHTML = `<img src="${message}" class="max-w-full h-auto mb-2 rounded">`;
-            } else {
-                messageElement.className = `p-2 rounded mb-2 ${
-                    sender === 'user' ? 'bg-blue-100 text-right' : 
-                    sender === 'ai' ? 'bg-green-100' : 
-                    sender === 'system' ? 'bg-yellow-100' :
-                    'bg-red-100'
-                }`;
-                messageElement.textContent = message;
+        function appendMessage(type, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('mb-2', 'p-2', 'rounded');
+
+            switch(type) {
+                case 'user':
+                    messageDiv.classList.add('bg-blue-100', 'text-right');
+                    messageDiv.textContent = content;
+                    break;
+                case 'ai':
+                    messageDiv.classList.add('bg-green-100');
+                    messageDiv.textContent = content;
+                    break;
+                case 'system':
+                    messageDiv.classList.add('bg-yellow-100');
+                    messageDiv.textContent = content;
+                    break;
+                case 'image':
+                    messageDiv.innerHTML = `<img src="${content}" class="max-w-full h-auto rounded">`;
+                    break;
+                case 'error':
+                    messageDiv.classList.add('bg-red-100');
+                    messageDiv.textContent = content;
+                    break;
             }
-            
-            chatMessages.appendChild(messageElement);
+
+            chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Event Listeners
         sendBtn.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();

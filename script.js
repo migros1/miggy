@@ -3,11 +3,11 @@ const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 let products = [];
 
-// uplist.txt'den verileri yükleme
+// uplist.txt dosyasından verileri yükleme
 fetch('uplist.txt')
     .then(response => response.text())
     .then(data => {
-        // Satır satır ayrıştırıyoruz
+        // Satırları ayrıştır ve ürünleri nesne listesine dönüştür
         const lines = data.split('\n');
         products = lines.map(line => {
             const parts = line.split(' - ');
@@ -18,7 +18,7 @@ fetch('uplist.txt')
                     image: parts[2].trim()
                 };
             }
-        }).filter(Boolean); // Geçerli ürünleri filtrele
+        }).filter(Boolean); // Geçerli ürünleri al
     })
     .catch(error => console.error('Veri yükleme hatası:', error));
 
@@ -37,7 +37,7 @@ function handleUserMessage(message) {
     const lowerMessage = message.toLowerCase();
     let foundProduct = null;
 
-    // Mesajda geçen ürünleri arıyoruz
+    // Mesajda ürün adını veya kodunu kontrol et
     for (const product of products) {
         if (
             lowerMessage.includes(product.name.toLowerCase()) ||
@@ -49,13 +49,20 @@ function handleUserMessage(message) {
     }
 
     if (foundProduct) {
-        appendMessage('bot', `Ürün: ${foundProduct.name} <br> Kod: ${foundProduct.code} <br><img src="${foundProduct.image}" alt="${foundProduct.name}" style="max-width: 100px;">`);
+        const response = `
+            Bu ürün hakkında bilgi buldum: <br>
+            <strong>Ürün Adı:</strong> ${foundProduct.name} <br>
+            <strong>Kodu:</strong> ${foundProduct.code} <br>
+            <strong>Görsel:</strong> <br>
+            <img src="${foundProduct.image}" alt="${foundProduct.name}" style="max-width: 150px; border: 1px solid #ccc; margin-top: 10px;">
+        `;
+        appendMessage('bot', response);
     } else {
-        appendMessage('bot', "Maalesef bu ürünü bulamadım. Daha detaylı bir bilgi sağlayabilir misiniz?");
+        appendMessage('bot', "Maalesef bu ürünü bulamadım. Lütfen ürün adını veya kodunu kontrol ederek tekrar deneyin.");
     }
 }
 
-// Mesajı sohbet kutusuna ekleme
+// Sohbet kutusuna mesaj ekleme
 function appendMessage(sender, message) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');

@@ -244,9 +244,33 @@
             const tableBody = document.getElementById("productList");
             tableBody.innerHTML = "";
 
-            productList.forEach(product => {
-                const row = document.createElement("tr");
+            const searchInput = document.getElementById("searchInput").value.toLowerCase();
 
+            productList.forEach(product => {
+                const productName = product.productName.toLowerCase();
+                const productCode = product.productCode.toLowerCase();
+
+                if (productName.includes(searchInput) || productCode.includes(searchInput)) {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${product.productName}</td>
+                        <td>${product.productCode}</td>
+                        <td><img src="${product.productImage}" alt="Ürün Resmi" width="50"></td>
+                        <td><a href="${product.migrosLink}" target="_blank">Migros Linki</a></td>
+                        <td><button onclick="editProduct('${product.productCode}')">Düzenle</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            });
+
+            const nonMatchingRows = productList.filter(product => {
+                const productName = product.productName.toLowerCase();
+                const productCode = product.productCode.toLowerCase();
+                return !productName.includes(searchInput) && !productCode.includes(searchInput);
+            });
+
+            nonMatchingRows.forEach(product => {
+                const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${product.productName}</td>
                     <td>${product.productCode}</td>
@@ -256,8 +280,6 @@
                 `;
                 tableBody.appendChild(row);
             });
-
-            searchProducts(); // Arama fonksiyonunu çağırıyoruz
         }
 
         // Ürün ekleme fonksiyonu
@@ -320,34 +342,7 @@
 
         // Ürün listesinde arama
         function searchProducts() {
-            const searchInput = document.getElementById("searchInput").value.toLowerCase();
-            const tableRows = document.querySelectorAll("#productList tbody tr");
-            const matchingRows = [];
-            const nonMatchingRows = [];
-
-            tableRows.forEach(row => {
-                const productName = row.children[0].textContent.toLowerCase();
-                const productCode = row.children[1].textContent.toLowerCase();
-
-                if (productName.includes(searchInput) || productCode.includes(searchInput)) {
-                    matchingRows.push(row);
-                } else {
-                    nonMatchingRows.push(row);
-                }
-            });
-
-            const tableBody = document.getElementById("productList").getElementsByTagName("tbody")[0];
-            tableBody.innerHTML = "";
-
-            // Önce eşleşen satırları ekle
-            matchingRows.forEach(row => {
-                tableBody.appendChild(row);
-            });
-
-            // Sonra eşleşmeyen satırları ekle
-            nonMatchingRows.forEach(row => {
-                tableBody.appendChild(row);
-            });
+            updateProductTable();
         }
 
         // Ürün listesini .txt olarak indir

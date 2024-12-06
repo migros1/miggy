@@ -3,305 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ürün Listesi Düzenleyici</title>
+    <title>Ürün Yönetimi</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fc;
+            font-family: Arial, sans-serif;
             padding: 20px;
+            background-color: #f4f4f9;
         }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-weight: bold;
-            color: #444;
-            width: 100%;
-        }
-
-        input[type="text"],
-        input[type="url"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        button {
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
-        th,
-        td {
-            padding: 12px;
+        table, th, td {
             border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
             text-align: left;
         }
-
         th {
-            background-color: #f7f7f7;
-            color: #333;
+            background-color: #007bff;
+            color: white;
         }
-
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .btn-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .download-btn {
-            padding: 12px 25px;
-            background-color: #28a745;
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            margin-top: 10px;
         }
-
-        .download-btn:hover {
-            background-color: #218838;
+        button:hover {
+            background-color: #0056b3;
         }
-
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        #searchBar {
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 300px;
+        }
     </style>
 </head>
 <body>
+    <h1>Ürün Yönetimi</h1>
 
-    <div class="container">
-        <h1>Ürün Listesi Düzenleyici</h1>
-        
-        <form id="productForm">
-            <div>
-                <label for="productName">Ürün Adı:</label>
-                <input type="text" id="productName" required>
-            </div>
-            <div>
-                <label for="productCode">Kasa Kodu:</label>
-                <input type="text" id="productCode" required>
-            </div>
-            <div>
-                <label for="productImage">Ürün Görseli Linki:</label>
-                <input type="url" id="productImage" required>
-            </div>
-            <div>
-                <label for="migrosLink">Migros Linki:</label>
-                <input type="url" id="migrosLink" required>
-            </div>
-            <div class="btn-container">
-                <button type="button" onclick="addProduct()">Ürün Ekle</button>
-            </div>
-        </form>
+    <!-- Arama Kutusu -->
+    <input type="text" id="searchBar" placeholder="Ürün ara..." onkeyup="searchProduct()">
+    <br>
 
-        <h2>Eklenen Ürünler</h2>
+    <!-- Ürün Ekleme Formu -->
+    <h2>Ürün Ekle</h2>
+    <form id="productForm">
+        <label>Ürün Adı: </label><input type="text" id="productName" required><br>
+        <label>Kasa Kodu: </label><input type="text" id="productCode" required><br>
+        <label>Ürün Görseli Linki: </label><input type="text" id="productImage"><br>
+        <label>Migros Linki: </label><input type="text" id="migrosLink"><br>
+        <button type="button" onclick="addProduct()">Ürün Ekle</button>
+    </form>
 
-        <table id="productList">
-            <thead>
-                <tr>
-                    <th>Ürün Adı</th>
-                    <th>Kasa Kodu</th>
-                    <th>Ürün Görseli Linki</th>
-                    <th>Migros Linki</th>
-                    <th>İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Ürünler buraya eklenecek -->
-            </tbody>
-        </table>
+    <!-- Aktarma Butonu -->
+    <h2>Ürün Aktar</h2>
+    <input type="file" id="fileInput" accept=".txt">
+    <button onclick="importFile()">Aktar</button>
 
-        <div class="btn-container">
-            <button class="download-btn" onclick="downloadFile()">Güncellenmiş Listeyi İndir</button>
-        </div>
-    </div>
+    <!-- Ürün Listesi -->
+    <h2>Ürün Listesi</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Ürün Adı</th>
+                <th>Kasa Kodu</th>
+                <th>Ürün Resmi</th>
+                <th>Migros Linki</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody id="productList"></tbody>
+    </table>
 
+    <!-- Ürünleri İndirme Butonu -->
+    <button onclick="downloadFile()">Dosyayı İndir</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
         let productList = []; // Ürünler burada tutulacak
-let db; // IndexedDB veritabanı
+        let db; // IndexedDB veritabanı
 
-// IndexedDB'i başlat
-function initDB() {
-    const request = indexedDB.open("productDatabase", 1);
+        // IndexedDB'i başlat
+        function initDB() {
+            const request = indexedDB.open("productDatabase", 1);
 
-    request.onupgradeneeded = function(event) {
-        db = event.target.result;
-        if (!db.objectStoreNames.contains("products")) {
-            db.createObjectStore("products", { keyPath: "productCode" }); // Kasa kodunu anahtar olarak alıyoruz
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains("products")) {
+                    db.createObjectStore("products", { keyPath: "productCode" }); // Kasa kodunu anahtar olarak alıyoruz
+                }
+            };
+
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                loadProducts();
+            };
+
+            request.onerror = function(event) {
+                console.error("DB bağlantısı hatası:", event.target.errorCode);
+            };
         }
-    };
 
-    request.onsuccess = function(event) {
-        db = event.target.result;
-        loadProducts();
-    };
+        // Ürünleri veritabanından yükle
+        function loadProducts() {
+            const transaction = db.transaction(["products"], "readonly");
+            const store = transaction.objectStore("products");
+            const request = store.getAll(); // Tüm ürünleri al
 
-    request.onerror = function(event) {
-        console.error("DB bağlantısı hatası:", event.target.errorCode);
-    };
-}
+            request.onsuccess = function(event) {
+                productList = event.target.result;
+                updateProductTable();
+            };
+        }
 
-// Ürünleri veritabanından yükle
-function loadProducts() {
-    const transaction = db.transaction(["products"], "readonly");
-    const store = transaction.objectStore("products");
-    const request = store.getAll(); // Tüm ürünleri al
+        // Ürünleri tabloya ekle
+        function updateProductTable() {
+            const tableBody = document.getElementById("productList");
+            tableBody.innerHTML = "";
 
-    request.onsuccess = function(event) {
-        productList = event.target.result;
-        updateProductTable();
-    };
-}
+            productList.forEach(product => {
+                const row = document.createElement("tr");
 
-// Ürünleri tabloya ekle
-function updateProductTable() {
-    const tableBody = document.getElementById("productList");
-    tableBody.innerHTML = "";
+                row.innerHTML = `
+                    <td>${product.productName}</td>
+                    <td>${product.productCode}</td>
+                    <td><img src="${product.productImage}" alt="Ürün Resmi" width="50"></td>
+                    <td><a href="${product.migrosLink}" target="_blank">Migros Linki</a></td>
+                    <td><button onclick="editProduct('${product.productCode}')">Düzenle</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
 
-    productList.forEach(product => {
-        const row = document.createElement("tr");
+        // Ürün ekleme fonksiyonu
+        function addProduct() {
+            const productName = document.getElementById("productName").value;
+            const productCode = document.getElementById("productCode").value;
+            const productImage = document.getElementById("productImage").value;
+            const migrosLink = document.getElementById("migrosLink").value;
 
-        row.innerHTML = `
-            <td>${product.productName}</td>
-            <td>${product.productCode}</td>
-            <td><img src="${product.productImage}" alt="Ürün Resmi" width="50"></td>
-            <td><a href="${product.migrosLink}" target="_blank">Migros Linki</a></td>
-            <td><button onclick="editProduct('${product.productCode}')">Düzenle</button></td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
+            const newProduct = {
+                productName,
+                productCode,
+                productImage,
+                migrosLink
+            };
 
-// Ürün ekleme fonksiyonu
-function addProduct() {
-    const productName = document.getElementById("productName").value;
-    const productCode = document.getElementById("productCode").value;
-    const productImage = document.getElementById("productImage").value;
-    const migrosLink = document.getElementById("migrosLink").value;
+            // Yeni ürünü veritabanına ekle
+            const transaction = db.transaction(["products"], "readwrite");
+            const store = transaction.objectStore("products");
+            store.put(newProduct); // put yerine add kullanırsanız, aynı kasa koduyla yeni ekleme yapılmaz
 
-    const newProduct = {
-        productName,
-        productCode,
-        productImage,
-        migrosLink
-    };
+            productList.push(newProduct);
+            updateProductTable();
+            document.getElementById("productForm").reset();
+        }
 
-    // Yeni ürünü veritabanına ekle
-    const transaction = db.transaction(["products"], "readwrite");
-    const store = transaction.objectStore("products");
-    store.put(newProduct); // put yerine add kullanırsanız, aynı kasa koduyla yeni ekleme yapılmaz
+        // Ürün import fonksiyonu
+        function importFile() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
 
-    productList.push(newProduct);
-    updateProductTable();
-    document.getElementById("productForm").reset();
-}
+            if (file) {
+                const reader = new FileReader();
 
-// Düzenleme fonksiyonu
-function editProduct(productCode) {
-    const product = productList.find(p => p.productCode === productCode);
-    
-    // Formu düzenlenmiş ürün verileri ile doldur
-    document.getElementById("productName").value = product.productName;
-    document.getElementById("productCode").value = product.productCode;
-    document.getElementById("productImage").value = product.productImage;
-    document.getElementById("migrosLink").value = product.migrosLink;
+                reader.onload = function(event) {
+                    const content = event.target.result;
+                    const lines = content.split("\n");
 
-    // Düzenleme butonunu "Düzenlemeyi Kaydet" olarak değiştir
-    const saveButton = document.querySelector("button[type='button']");
-    saveButton.textContent = "Düzenlemeyi Kaydet";
-    saveButton.onclick = function() {
-        // Ürünü bul ve güncelle
-        product.productName = document.getElementById("productName").value;
-        product.productImage = document.getElementById("productImage").value;
-        product.migrosLink = document.getElementById("migrosLink").value;
+                    // Eski verileri temizle
+                    productList = [];
 
-        // Ürün veritabanında güncelleniyor
-        const transaction = db.transaction(["products"], "readwrite");
-        const store = transaction.objectStore("products");
-        store.put(product); // Bu put, ürün koduna göre var olan ürünü günceller
+                    lines.forEach(line => {
+                        const [productName, productCode, productImage, migrosLink] = line.split(" - ");
+                        if (productName && productCode && productImage && migrosLink) {
+                            const newProduct = {
+                                productName,
+                                productCode,
+                                productImage,
+                                migrosLink
+                            };
+                            productList.push(newProduct);
+                        }
+                    });
 
-        // Listeyi güncelle
-        updateProductTable();
+                    // Veritabanını güncelle ve listeyi yeniden oluştur
+                    const transaction = db.transaction(["products"], "readwrite");
+                    const store = transaction.objectStore("products");
 
-        // Formu sıfırla ve butonu eski haline getir
-        document.getElementById("productForm").reset();
-        saveButton.textContent = "Ürün Ekle";
-        saveButton.onclick = addProduct;
-    };
-}
+                    productList.forEach(product => {
+                        store.put(product);
+                    });
 
-// Ürün listesini .txt olarak indir
-function downloadFile() {
-    let fileContent = "Ürün Adı,Kasa Kodu,Ürün Görseli Linki,Migros Linki\n";
-    productList.forEach(product => {
-        fileContent += `${product.productName},${product.productCode},${product.productImage},${product.migrosLink}\n`;
-    });
+                    updateProductTable();
+                };
 
-    const blob = new Blob([fileContent], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "urun_listesi.txt";
-    link.click();
-}
+                reader.readAsText(file);
+            }
+        }
 
-window.onload = initDB;
+        // Arama fonksiyonu
+        function searchProduct() {
+            const searchQuery = document.getElementById("searchBar").value.toLowerCase();
+            const filteredList = productList.filter(product => {
+                return product.productName.toLowerCase().includes(searchQuery) ||
+                    product.productCode.toLowerCase().includes(searchQuery) ||
+                    product.migrosLink.toLowerCase().includes(searchQuery);
+            });
+            updateProductTable(filteredList);
+        }
+
+        // Ürün listesini .txt olarak indir
+        function downloadFile() {
+            let fileContent = "Ürün Adı,Kasa Kodu,Ürün Görseli Linki,Migros Linki\n";
+            productList.forEach(product => {
+                fileContent += `${product.productName},${product.productCode},${product.productImage},${product.migrosLink}\n`;
+            });
+
+            const blob = new Blob([fileContent], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "urun_listesi.txt";
+            link.click();
+        }
+
+        window.onload = initDB;
     </script>
-
 </body>
 </html>

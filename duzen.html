@@ -159,6 +159,7 @@
                     <th>Kasa Kodu</th>
                     <th>Ürün Görseli Linki</th>
                     <th>Migros Linki</th>
+                    <th>İşlemler</th>
                 </tr>
             </thead>
             <tbody>
@@ -172,12 +173,40 @@
     </div>
 
     <script>
-        let productList = JSON.parse(localStorage.getItem('productList')) || [];
+        let db;
+        let productList = [];
 
-        // Sayfa yüklendiğinde localStorage'dan ürünleri listele
-        window.onload = function() {
-            updateProductTable();
-        };
+        // IndexedDB veritabanını başlat
+        function initDB() {
+            const request = indexedDB.open("ProductDB", 1);
+
+            request.onupgradeneeded = function(e) {
+                db = e.target.result;
+                if (!db.objectStoreNames.contains("products")) {
+                    db.createObjectStore("products", { keyPath: "productName" });
+                }
+            };
+
+            request.onsuccess = function(e) {
+                db = e.target.result;
+                loadProducts();
+            };
+
+            request.onerror = function(e) {
+                console.log("Database error: " + e.target.errorCode);
+            };
+        }
+
+        function loadProducts() {
+            const transaction = db.transaction(["products"], "readonly");
+            const store = transaction.objectStore("products");
+            const request = store.getAll();
+
+            request.onsuccess = function() {
+                productList = request.result;
+                updateProductTable();
+            };
+        }
 
         function addProduct() {
             const productName = document.getElementById("productName").value;
@@ -186,21 +215,23 @@
             const migrosLink = document.getElementById("migrosLink").value;
 
             if (productName && productCode && productImage && migrosLink) {
-                // Yeni ürünü listeye ekle
-                productList.push({
+                const newProduct = {
                     productName,
                     productCode,
                     productImage,
                     migrosLink
-                });
+                };
 
-                // localStorage'a kaydet
-                localStorage.setItem('productList', JSON.stringify(productList));
+                // Veritabanına kaydet
+                const transaction = db.transaction(["products"], "readwrite");
+                const store = transaction.objectStore("products");
+                store.put(newProduct);
 
-                // Tabloyu güncelle
+                // Ürün listesine ekle
+                productList.push(newProduct);
                 updateProductTable();
 
-                // Formu temizle
+                // Formu sıfırla
                 document.getElementById("productForm").reset();
             }
         }
@@ -216,23 +247,60 @@
                     <td>${product.productCode}</td>
                     <td><a href="${product.productImage}" target="_blank">Görüntüle</a></td>
                     <td><a href="${product.migrosLink}" target="_blank">Migros</a></td>
+                    <td><button onclick="editProduct('${product.productName}')">Düzenle</button></td>
                 `;
             });
         }
 
+        function editProduct(productName) {
+            const product = productList.find(p => p.productName === productName);
+            if (product) {
+                document.getElementById("productName").value = product.productName;
+                document.getElementById("productCode").value = product.productCode;
+                document.getElementById("productImage").value = product.productImage;
+                document.getElementById("migrosLink").value = product.migrosLink;
+
+            
+// Düzenlemeyi kaydetme işlemi
+                const saveButton = document.querySelector("button[type='button']");
+                saveButton.textContent = "Düzenlemeyi Kaydet"; // Buton metnini değiştir
+                saveButton.onclick = function() {
+                    product.productName = document.getElementById("productName").value;
+                    product.productCode = document.getElementById("productCode").value;
+                    product.productImage = document.getElementById("productImage").value;
+                    product.migrosLink = document.getElementById("migrosLink").value;
+
+                    // Veritabanında güncelle
+                    const transaction = db.transaction(["products"], "readwrite");
+                    const store = transaction.objectStore("products");
+                    store.put(product);
+
+                    // Ürün listesinde güncelleme yap
+                    updateProductTable();
+
+                    // Formu sıfırla ve butonu eski haline getir
+                    document.getElementById("productForm").reset();
+                    saveButton.textContent = "Ürün Ekle";
+                    saveButton.onclick = addProduct;
+                };
+            }
+        }
+
         function downloadFile() {
-            let fileContent = "";
+            let fileContent = "Ürün Adı,Kasa Kodu,Ürün Görseli Linki,Migros Linki\n";
             productList.forEach(product => {
-                fileContent += `${product.productName} - ${product.productCode} - ${product.productImage} - ${product.migrosLink}\n`;
+                fileContent += `${product.productName},${product.productCode},${product.productImage},${product.migrosLink}\n`;
             });
 
-            // Dosya oluştur ve indir
-            const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
+            const blob = new Blob([fileContent], { type: "text/plain" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "uplist.txt";
+            link.download = "urun_listesi.txt";
             link.click();
         }
+
+        // Sayfa yüklendiğinde IndexedDB başlat
+        window.onload = initDB;
     </script>
 
 </body>

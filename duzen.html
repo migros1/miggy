@@ -322,16 +322,31 @@
         function searchProducts() {
             const searchInput = document.getElementById("searchInput").value.toLowerCase();
             const tableRows = document.querySelectorAll("#productList tbody tr");
+            const matchingRows = [];
+            const nonMatchingRows = [];
 
             tableRows.forEach(row => {
                 const productName = row.children[0].textContent.toLowerCase();
                 const productCode = row.children[1].textContent.toLowerCase();
 
                 if (productName.includes(searchInput) || productCode.includes(searchInput)) {
-                    row.style.display = "table-row";
+                    matchingRows.push(row);
                 } else {
-                    row.style.display = "none";
+                    nonMatchingRows.push(row);
                 }
+            });
+
+            const tableBody = document.getElementById("productList").getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = "";
+
+            // Önce eşleşen satırları ekle
+            matchingRows.forEach(row => {
+                tableBody.appendChild(row);
+            });
+
+            // Sonra eşleşmeyen satırları ekle
+            nonMatchingRows.forEach(row => {
+                tableBody.appendChild(row);
             });
         }
 

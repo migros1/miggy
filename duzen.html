@@ -278,36 +278,33 @@
             const searchInput = document.getElementById("searchInput").value.toLowerCase();
             const filterValue = document.querySelector('input[name="filter"]:checked').value;
 
-            productList.forEach(product => {
-                const productName = product.productName.toLowerCase();
-                const productCode = product.productCode.toLowerCase();
+            let filteredProducts = productList;
 
-                let shouldShow = true;
+            if (filterValue === 'noImage') {
+                filteredProducts = productList.filter(product => !product.productImage);
+            } else if (filterValue === 'noMigros') {
+                filteredProducts = productList.filter(product => !product.migrosLink);
+            } else {
+                filteredProducts = productList.filter(product => {
+                    const productName = product.productName.toLowerCase();
+                    const productCode = product.productCode.toLowerCase();
+                    return productName.includes(searchInput) || productCode.includes(searchInput);
+                });
+            }
 
-                if (filterValue === 'noImage' && !product.productImage) {
-                    shouldShow = true;
-                } else if (filterValue === 'noMigros' && !product.migrosLink) {
-                    shouldShow = true;
-                } else if (filterValue === 'all' || (productName.includes(searchInput) || productCode.includes(searchInput))) {
-                    shouldShow = true;
-                } else {
-                    shouldShow = false;
-                }
-
-                if (shouldShow) {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${product.productName}</td>
-                        <td>${product.productCode}</td>
-                        <td><img src="${product.productImage || '#'}" alt="Ürün Resmi" width="50"></td>
-                        <td><a href="${product.migrosLink || '#'}" target="_blank">Migros Linki</a></td>
-                        <td>
-                            <button onclick="editProduct('${product.productCode}')">Düzenle</button>
-                            <button onclick="deleteProduct('${product.productCode}')">Sil</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                }
+            filteredProducts.forEach(product => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${product.productName}</td>
+                    <td>${product.productCode}</td>
+                    <td><img src="${product.productImage || '#'}" alt="Ürün Resmi" width="50"></td>
+                    <td><a href="${product.migrosLink || '#'}" target="_blank">Migros Linki</a></td>
+                    <td>
+                        <button onclick="editProduct('${product.productCode}')">Düzenle</button>
+                        <button onclick="deleteProduct('${product.productCode}')">Sil</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
             });
         }
 

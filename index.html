@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miggy Asistan</title>
+    <style>
+        /* Basit CSS stilleri */
+        .chat-container {
+            width: 50%;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .product {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .product img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        #chat-output {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        #chat-output div {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>Miggy Asistan</h2>
+        <div id="product-info">
+            <!-- Ürün bilgileri burada gösterilecek -->
+        </div>
+        <div>
+            <input type="text" id="chat-input" placeholder="Mesajınızı yazın..." style="width: calc(100% - 70px);">
+            <button onclick="sendMessage()">Gönder</button>
+        </div>
+        <div id="chat-output">
+            <!-- Sohbet çıktısı burada gösterilecek -->
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -5,18 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Miggy Asistan</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
   <div id="app">
-    <h1>Miggy Asistan</h1>
-    <form id="query-form">
-      <input type="text" id="query" placeholder="Bir ürün adı yazın..." />
-      <button type="submit">Gönder</button>
-    </form>
+    <header>
+      <div class="header-content">
+        <div class="logo">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/MiGROS_Logo.svg/799px-MiGROS_Logo.svg.png" alt="Migros Logo">
+        </div>
+        <form id="query-form">
+          <div class="search-container">
+            <input type="text" id="query" placeholder="Ürün, kategori veya marka ara..." />
+            <button type="submit"><i class="fas fa-search"></i></button>
+          </div>
+        </form>
+      </div>
+    </header>
     <div id="result">
-      <!-- Sonuçlar burada görüntülenecek -->
+      <div class="product-list">
+        <!-- Ürün bilgileri burada görüntülenecek -->
+      </div>
+      <div class="pagination">
+        <button id="prev-page" disabled><i class="fas fa-chevron-left"></i></button>
+        <span id="current-page">1</span> / <span id="total-pages">1</span>
+        <button id="next-page"><i class="fas fa-chevron-right"></i></button>
+      </div>
     </div>
   </div>
+
+  <!-- Stok kontrolü penceresi -->
+  <div id="stock-control-modal" class="modal">
+    <div class="modal-content">
+      <h2>Stok Kontrolü</h2>
+      <p>Stok Kontolü yapmak için Migros.com.tr adresinden üye girişi yapmanız gerekmektedir! Aksi halide ilgili ürünün stok bilgilerini göremezsiniz.</p>
+      <button id="modal-close-btn">Tamam</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

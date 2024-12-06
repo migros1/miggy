@@ -6,11 +6,14 @@ async function fetchChatResponse(message) {
         
         console.log('API Yanıtı:', data);  // Yanıtı konsola yazdırarak kontrol et
         
-        // API yanıtında doğru anahtarı kullanarak yanıtı al
-        if (data.answer) {
-            return data.answer;
-        } else if (data.response) {
-            return data.response; // Yanıt burada olabilir
+        // Yanıtın hangi alanında cevap olduğunu kontrol et
+        if (data && typeof data === 'object') {
+            // Yanıtın mevcut anahtarlarını kontrol et
+            for (const key in data) {
+                console.log(`Anahtar: ${key}, Değer: ${data[key]}`); // Anahtarları ve değerlerini yazdır
+            }
+            // Doğru anahtarı bul ve cevap olarak döndür
+            return data.answer || data.response || "Yanıt alınamadı.";
         } else {
             return "Yanıt alınamadı.";
         }
@@ -37,3 +40,6 @@ function displayChatMessage(sender, message) {
     messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
     chatOutput.appendChild(messageDiv);
 }
+
+// Sayfa yüklendiğinde ürün verilerini yükle
+window.onload = loadProductData;

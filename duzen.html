@@ -201,9 +201,10 @@
                     const store = transaction.objectStore("products");
 
                     productList.forEach(product => {
-                        store.put(product);
+                        store.put(product); // Veritabanına yeni ürünleri ekle
                     });
 
+                    // Sayfayı güncelle
                     updateProductTable();
                 };
 
@@ -224,9 +225,9 @@
 
         // Ürün listesini .txt olarak indir
         function downloadFile() {
-            let fileContent = "Ürün Adı,Kasa Kodu,Ürün Görseli Linki,Migros Linki\n";
+            let fileContent = "";
             productList.forEach(product => {
-                fileContent += `${product.productName},${product.productCode},${product.productImage},${product.migrosLink}\n`;
+                fileContent += `${product.productName} - ${product.productCode} - ${product.productImage} - ${product.migrosLink}\n`;
             });
 
             const blob = new Blob([fileContent], { type: "text/plain" });

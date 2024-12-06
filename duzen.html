@@ -91,6 +91,7 @@
     <script>
         let productList = []; // Ürünler burada tutulacak
         let db; // IndexedDB veritabanı
+        let editingProductCode = null; // Düzenleme için geçici ürün kodu
 
         // IndexedDB'i başlat
         function initDB() {
@@ -158,12 +159,23 @@
                 migrosLink
             };
 
-            // Yeni ürünü veritabanına ekle
+            if (editingProductCode) {
+                // Düzenleme işlemi
+                const index = productList.findIndex(product => product.productCode === editingProductCode);
+                if (index !== -1) {
+                    productList[index] = newProduct; // Ürünü güncelle
+                }
+                editingProductCode = null; // Düzenleme bitince sıfırla
+            } else {
+                // Yeni ürün ekleme
+                productList.push(newProduct);
+            }
+
+            // Veritabanına ekle veya güncelle
             const transaction = db.transaction(["products"], "readwrite");
             const store = transaction.objectStore("products");
             store.put(newProduct); // put yerine add kullanırsanız, aynı kasa koduyla yeni ekleme yapılmaz
 
-            productList.push(newProduct);
             updateProductTable();
             document.getElementById("productForm").reset();
         }
@@ -237,7 +249,22 @@
             link.click();
         }
 
-        window.onload = initDB;
+        // Düzenleme işlemi
+        function editProduct(productCode) {
+            const product = productList.find(p => p.productCode === productCode);
+            if (product) {
+                document.getElementById("productName").value = product.productName;
+                document.getElementById("productCode").value = product.productCode;
+                document.getElementById("productImage").value = product.productImage;
+                document.getElementById("migrosLink").value = product.migrosLink;
+                editingProductCode = productCode; // Düzenlemeye başla
+            }
+        }
+
+        // Sayfa yüklendiğinde veritabanını başlat
+        window.onload = function() {
+            initDB();
+        };
     </script>
 </body>
 </html>

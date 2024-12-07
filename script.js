@@ -11,6 +11,9 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
       return { product, code, imageUrl, infoLink };
     });
 
+    // Ürün kodları "undefined" olan ürünleri filtreleme
+    products = products.filter(item => item.code !== 'undefined');
+
     // Ürünleri ürün adına göre sırala
     products.sort((a, b) => a.product.localeCompare(b.product));
 
@@ -35,7 +38,7 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
           </div>
           <div class="product-info">
             <div class="product-name">${item.product}</div>
-            <div class="product-code">Kod: ${item.code}</div>
+            <div class="product-code">Kod: ${item.code || ''}</div>
             <a href="${item.infoLink}" target="_blank" class="migros-link">Migros ile bak</a>
           </div>
         `;

@@ -30,20 +30,22 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
       const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
       paginatedProducts.forEach(item => {
-        const productCard = document.createElement('div');
-        productCard.classList.add('product-card');
-        productCard.innerHTML = `
-          <div class="product-image">
-            <img src="${item.imageUrl}" alt="${item.product}">
-          </div>
-          <div class="product-info">
-            <div class="product-name">${item.product}</div>
-            <div class="product-code">Kod: ${item.code || ''}</div>
-            <a href="${item.infoLink}" target="_blank" class="migros-link">Migros ile bak</a>
-          </div>
-        `;
+        if (item.product) {
+          const productCard = document.createElement('div');
+          productCard.classList.add('product-card');
+          productCard.innerHTML = `
+            <div class="product-image">
+              <img src="${item.imageUrl}" alt="${item.product}">
+            </div>
+            <div class="product-info">
+              <div class="product-name">${item.product}</div>
+              <div class="product-code">Kod: ${item.code || ''}</div>
+              <a href="${item.infoLink}" target="_blank" class="migros-link">Migros ile bak</a>
+            </div>
+          `;
 
-        productList.appendChild(productCard);
+          productList.appendChild(productCard);
+        }
       });
 
       // Sayfalama bilgileri

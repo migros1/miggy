@@ -103,71 +103,44 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
       }
     }
 
-    // Üste çekince listeyi yenileme ve güncelleme
-    const productListContainer = document.querySelector('.product-list-container');
-    const productList = document.querySelector('.product-list');
-    const loadingSpinner = document.querySelector('.loading-spinner');
+    // Ürün listesini güncelleme
+    const refreshButton = document.getElementById('refresh-products');
+    refreshButton.addEventListener('click', () => {
+      const productListContainer = document.querySelector('.product-list-container');
+      const loadingSpinner = document.querySelector('.loading-spinner');
 
-    let isRefreshing = false;
-    let refreshTimeout;
-    let pullDistance = 0;
-    const pullThreshold = 100; // Çekme mesafesi eşiği
+      productListContainer.classList.add('refreshing');
+      loadingSpinner.style.display = 'flex';
 
-    productListContainer.addEventListener('touchstart', (event) => {
-      if (window.pageYOffset === 0) {
-        productListContainer.classList.add('refreshing');
-        pullDistance = 0;
-      }
-    });
+      fetch('https://migros1.github.io/miggy/uplist.txt')
+        .then(response => {
+          if (!response.ok) throw new Error('Dosya yüklenemedi');
+          return response.text();
+        })
+        .then(data => {
+          const lines = data.split('\n');
+          products = lines.map(line => {
+            const [product, code, imageUrl, infoLink] = line.split(' - ');
+            return { product, code, imageUrl, infoLink };
+          });
 
-    productListContainer.addEventListener('touchmove', (event) => {
-      if (window.pageYOffset === 0) {
-        pullDistance = event.touches[0].clientY;
-        productListContainer.style.transform = `translateY(${pullDistance}px)`;
-      }
-    });
+          // Ürün kodları "undefined" olan veya ürün adı olmayan ürünleri filtreleme
+          products = products.filter(item => item.code !== 'undefined' && item.product);
 
-    productListContainer.addEventListener('touchend', () => {
-      if (window.pageYOffset === 0 && pullDistance >= pullThreshold) {
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshTimeout = setTimeout(() => {
-            fetch('https://migros1.github.io/miggy/uplist.txt')
-              .then(response => {
-                if (!response.ok) throw new Error('Dosya yüklenemedi');
-                return response.text();
-              })
-              .then(data => {
-                const lines = data.split('\n');
-                products = lines.map(line => {
-                  const [product, code, imageUrl, infoLink] = line.split(' - ');
-                  return { product, code, imageUrl, infoLink };
-                });
+          // Ürünleri ürün adına göre sırala
+          products.sort((a, b) => a.product.localeCompare(b.product));
 
-                // Ürün kodları "undefined" olan veya ürün adı olmayan ürünleri filtreleme
-                products = products.filter(item => item.code !== 'undefined' && item.product);
-
-                // Ürünleri ürün adına göre sırala
-                products.sort((a, b) => a.product.localeCompare(b.product));
-
-                filteredProducts = [...products];
-                currentPage = 1;
-                displayProducts();
-                productListContainer.classList.remove('refreshing');
-                productListContainer.style.transform = 'translateY(0)';
-                isRefreshing = false;
-              })
-              .catch(error => {
-                console.error('Hata:', error);
-                productListContainer.classList.remove('refreshing');
-                productListContainer.style.transform = 'translateY(0)';
-                isRefreshing = false;
-              });
-          }, 1000); // 1 saniye bekledikten sonra güncelleme yap
-        }
-      } else {
-        productListContainer.style.transform = 'translateY(0)';
-      }
+          filteredProducts = [...products];
+          currentPage = 1;
+          displayProducts();
+          productListContainer.classList.remove('refreshing');
+          loadingSpinner.style.display = 'none';
+        })
+        .catch(error => {
+          console.error('Hata:', error);
+          productListContainer.classList.remove('refreshing');
+          loadingSpinner.style.display = 'none';
+        });
     });
 
     displayProducts();

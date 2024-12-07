@@ -11,6 +11,9 @@ header {
   background-color: #1e6738;
   color: #fff;
   padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .header-content {
@@ -34,6 +37,7 @@ header {
   flex-grow: 1;
   display: flex;
   justify-content: center;
+  margin: 0 20px;
 }
 
 .search-container input {
@@ -42,6 +46,19 @@ header {
   border-radius: 4px;
   width: 400px;
   font-size: 16px;
+}
+
+.refresh-button {
+  background-color: #1e6738;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 /* Ürün Listesi */
@@ -67,7 +84,7 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -194,8 +211,6 @@ main {
 .product-list-container.refreshing {
   background-color: #e6f4e6;
   transition: background-color 0.3s ease;
-  transform: translateY(100px);
-  transition: transform 0.3s ease;
 }
 
 /* Mobil Cihazlar İçin */
@@ -212,7 +227,17 @@ main {
     max-width: 120px;
   }
 
+  .search-container {
+    width: 100%;
+    margin: 16px 0;
+  }
+
   .search-container input {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .refresh-button {
     width: 100%;
     max-width: 400px;
   }

@@ -6,7 +6,7 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
   })
   .then(data => {
     const lines = data.split('\n');
-    products = lines.map(line => {
+    let products = lines.map(line => {
       const [product, code, imageUrl, infoLink] = line.split(' - ');
       return { product, code, imageUrl, infoLink };
     });
@@ -18,11 +18,13 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
     products.sort((a, b) => a.product.localeCompare(b.product));
 
     let currentPage = 1;
-    let productsPerPage = 12;
+    const productsPerPage = 12;
     let filteredProducts = [...products];
 
     function displayProducts() {
       const productList = document.querySelector('.product-list');
+      if (!productList) return; // Eğer ürün listesi bulunamazsa işlemi durdur
+
       productList.innerHTML = '';
 
       const startIndex = (currentPage - 1) * productsPerPage;
@@ -101,6 +103,9 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
 
     // Üste çekince listeyi yenileme ve güncelleme (sadece mobil görünümde)
     if (window.innerWidth < 768) {
+      const productList = document.querySelector('.product-list');
+      if (!productList) return; // Eğer ürün listesi bulunamazsa işlemi durdur
+
       let isRefreshing = false;
 
       productList.addEventListener('touchstart', () => {

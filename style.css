@@ -18,14 +18,15 @@ body {
 
 .header-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   background-color: #007bff;
   padding: 16px;
 }
 
 .logo {
-  margin-right: 20px;
+  margin-bottom: 16px;
 }
 
 .logo img {
@@ -33,7 +34,6 @@ body {
 }
 
 .search-container {
-  flex-grow: 1;
   display: flex;
   width: 100%;
   max-width: 500px;

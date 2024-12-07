@@ -165,3 +165,23 @@ main {
   background-color: #e6f4e6;
   transition: background-color 0.3s ease;
 }
+
+/* Mobil Cihazlar İçin */
+@media (max-width: 767px) {
+  .header-content {
+    flex-direction: column;
+  }
+
+  .logo-container {
+    margin-bottom: 16px;
+  }
+
+  .migros-logo {
+    max-width: 120px;
+  }
+
+  .search-container input {
+    width: 100%;
+    max-width: 400px;
+  }
+}

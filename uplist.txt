@@ -1,4 +1,3 @@
-Ürün Adı - Ürün Kodu - Ürün Görseli Linki - Migros Linki
 Hıyar Badem Paket KG. - 1033 - https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJuMC02X59WQvDdhVP5pU9KlxNK7V9ZQtinSdnA1BH8gjOHziXRbkvCSII&s=10 - http://www.migros.com.tr/hiyar-badem-paket-kg-p-1ad3add
 Kumkuat - 1086 - https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB66wkVaCPFy4znBtLevv1EIZg_5FXeR-M00T2LktU4pixixca4MO3vy9n&s=10 - http://www.migros.com.tr/kumkuat-kg-p-1a43a45
 Çarliston Biber KG. - 109 - https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTu1siti5HK6ETIF5DXm8-ee8cYLia6Yfkgoz0QDO_U8B0MoqWleqPDaZrt&s=10 - http://www.migros.com.tr/biber-carliston-kg-p-1ac0638

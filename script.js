@@ -11,8 +11,8 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
       return { product, code, imageUrl, infoLink };
     });
 
-    // Ürün kodları "undefined" olan ürünleri filtreleme
-    products = products.filter(item => item.code !== 'undefined');
+    // Ürün kodları "undefined" olan veya ürün adı olmayan ürünleri filtreleme
+    products = products.filter(item => item.code !== 'undefined' && item.product);
 
     // Ürünleri ürün adına göre sırala
     products.sort((a, b) => a.product.localeCompare(b.product));

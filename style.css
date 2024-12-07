@@ -53,6 +53,7 @@ main {
 
 .product-list-container {
   position: relative;
+  overflow-y: auto;
 }
 
 .product-list {
@@ -193,6 +194,8 @@ main {
 .product-list-container.refreshing {
   background-color: #e6f4e6;
   transition: background-color 0.3s ease;
+  transform: translateY(100px);
+  transition: transform 0.3s ease;
 }
 
 /* Mobil Cihazlar İçin */

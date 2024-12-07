@@ -110,45 +110,63 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
 
     let isRefreshing = false;
     let refreshTimeout;
+    let pullDistance = 0;
+    const pullThreshold = 100; // Çekme mesafesi eşiği
 
-    productListContainer.addEventListener('touchstart', () => {
-      productListContainer.classList.add('refreshing');
+    productListContainer.addEventListener('touchstart', (event) => {
+      if (window.pageYOffset === 0) {
+        productListContainer.classList.add('refreshing');
+        pullDistance = 0;
+      }
+    });
+
+    productListContainer.addEventListener('touchmove', (event) => {
+      if (window.pageYOffset === 0) {
+        pullDistance = event.touches[0].clientY;
+        productListContainer.style.transform = `translateY(${pullDistance}px)`;
+      }
     });
 
     productListContainer.addEventListener('touchend', () => {
-      if (!isRefreshing) {
-        isRefreshing = true;
-        refreshTimeout = setTimeout(() => {
-          fetch('https://migros1.github.io/miggy/uplist.txt')
-            .then(response => {
-              if (!response.ok) throw new Error('Dosya yüklenemedi');
-              return response.text();
-            })
-            .then(data => {
-              const lines = data.split('\n');
-              products = lines.map(line => {
-                const [product, code, imageUrl, infoLink] = line.split(' - ');
-                return { product, code, imageUrl, infoLink };
+      if (window.pageYOffset === 0 && pullDistance >= pullThreshold) {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          refreshTimeout = setTimeout(() => {
+            fetch('https://migros1.github.io/miggy/uplist.txt')
+              .then(response => {
+                if (!response.ok) throw new Error('Dosya yüklenemedi');
+                return response.text();
+              })
+              .then(data => {
+                const lines = data.split('\n');
+                products = lines.map(line => {
+                  const [product, code, imageUrl, infoLink] = line.split(' - ');
+                  return { product, code, imageUrl, infoLink };
+                });
+
+                // Ürün kodları "undefined" olan veya ürün adı olmayan ürünleri filtreleme
+                products = products.filter(item => item.code !== 'undefined' && item.product);
+
+                // Ürünleri ürün adına göre sırala
+                products.sort((a, b) => a.product.localeCompare(b.product));
+
+                filteredProducts = [...products];
+                currentPage = 1;
+                displayProducts();
+                productListContainer.classList.remove('refreshing');
+                productListContainer.style.transform = 'translateY(0)';
+                isRefreshing = false;
+              })
+              .catch(error => {
+                console.error('Hata:', error);
+                productListContainer.classList.remove('refreshing');
+                productListContainer.style.transform = 'translateY(0)';
+                isRefreshing = false;
               });
-
-              // Ürün kodları "undefined" olan veya ürün adı olmayan ürünleri filtreleme
-              products = products.filter(item => item.code !== 'undefined' && item.product);
-
-              // Ürünleri ürün adına göre sırala
-              products.sort((a, b) => a.product.localeCompare(b.product));
-
-              filteredProducts = [...products];
-              currentPage = 1;
-              displayProducts();
-              productListContainer.classList.remove('refreshing');
-              isRefreshing = false;
-            })
-            .catch(error => {
-              console.error('Hata:', error);
-              productListContainer.classList.remove('refreshing');
-              isRefreshing = false;
-            });
-        }, 2000); // 2 saniye bekledikten sonra güncelleme yap
+          }, 1000); // 1 saniye bekledikten sonra güncelleme yap
+        }
+      } else {
+        productListContainer.style.transform = 'translateY(0)';
       }
     });
 

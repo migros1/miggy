@@ -51,10 +51,39 @@ main {
   padding: 20px;
 }
 
+.product-list-container {
+  position: relative;
+}
+
 .product-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-gap: 20px;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1e6738;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .product-card {
@@ -161,7 +190,7 @@ main {
 }
 
 /* Üste çekince yenileme efekti */
-.product-list.refreshing {
+.product-list-container.refreshing {
   background-color: #e6f4e6;
   transition: background-color 0.3s ease;
 }

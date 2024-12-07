@@ -23,9 +23,11 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
 
     function displayProducts() {
       const productList = document.querySelector('.product-list');
-      if (!productList) return; // Eğer ürün listesi bulunamazsa işlemi durdur
+      const loadingSpinner = document.querySelector('.loading-spinner');
+      if (!productList || !loadingSpinner) return; // Eğer ürün listesi veya yükleme göstergesi bulunamazsa işlemi durdur
 
       productList.innerHTML = '';
+      loadingSpinner.style.display = 'none';
 
       const startIndex = (currentPage - 1) * productsPerPage;
       const endIndex = startIndex + productsPerPage;
@@ -102,17 +104,21 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
     }
 
     // Üste çekince listeyi yenileme ve güncelleme
+    const productListContainer = document.querySelector('.product-list-container');
     const productList = document.querySelector('.product-list');
-    if (productList) {
-      let isRefreshing = false;
+    const loadingSpinner = document.querySelector('.loading-spinner');
 
-      productList.addEventListener('touchstart', () => {
-        productList.classList.add('refreshing');
-      });
+    let isRefreshing = false;
+    let refreshTimeout;
 
-      productList.addEventListener('touchend', () => {
-        if (!isRefreshing) {
-          isRefreshing = true;
+    productListContainer.addEventListener('touchstart', () => {
+      productListContainer.classList.add('refreshing');
+    });
+
+    productListContainer.addEventListener('touchend', () => {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        refreshTimeout = setTimeout(() => {
           fetch('https://migros1.github.io/miggy/uplist.txt')
             .then(response => {
               if (!response.ok) throw new Error('Dosya yüklenemedi');
@@ -134,17 +140,17 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
               filteredProducts = [...products];
               currentPage = 1;
               displayProducts();
-              productList.classList.remove('refreshing');
+              productListContainer.classList.remove('refreshing');
               isRefreshing = false;
             })
             .catch(error => {
               console.error('Hata:', error);
-              productList.classList.remove('refreshing');
+              productListContainer.classList.remove('refreshing');
               isRefreshing = false;
             });
-        }
-      });
-    }
+        }, 2000); // 2 saniye bekledikten sonra güncelleme yap
+      }
+    });
 
     displayProducts();
   })

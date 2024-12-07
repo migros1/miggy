@@ -99,6 +99,50 @@ fetch('https://migros1.github.io/miggy/uplist.txt')
       }
     }
 
+    // Üste çekince listeyi yenileme ve güncelleme (sadece mobil görünümde)
+    if (window.innerWidth < 768) {
+      let isRefreshing = false;
+
+      productList.addEventListener('touchstart', () => {
+        productList.classList.add('refreshing');
+      });
+
+      productList.addEventListener('touchend', () => {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          fetch('https://migros1.github.io/miggy/uplist.txt')
+            .then(response => {
+              if (!response.ok) throw new Error('Dosya yüklenemedi');
+              return response.text();
+            })
+            .then(data => {
+              const lines = data.split('\n');
+              products = lines.map(line => {
+                const [product, code, imageUrl, infoLink] = line.split(' - ');
+                return { product, code, imageUrl, infoLink };
+              });
+
+              // Ürün kodları "undefined" olan veya ürün adı olmayan ürünleri filtreleme
+              products = products.filter(item => item.code !== 'undefined' && item.product);
+
+              // Ürünleri ürün adına göre sırala
+              products.sort((a, b) => a.product.localeCompare(b.product));
+
+              filteredProducts = [...products];
+              currentPage = 1;
+              displayProducts();
+              productList.classList.remove('refreshing');
+              isRefreshing = false;
+            })
+            .catch(error => {
+              console.error('Hata:', error);
+              productList.classList.remove('refreshing');
+              isRefreshing = false;
+            });
+        }
+      });
+    }
+
     displayProducts();
   })
   .catch(error => console.error('Hata:', error));
